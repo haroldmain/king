@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Land6</title>
+    <title>Download...</title>
     <style>
         html, body{
             margin: 0;
@@ -17,7 +17,7 @@
         }
     </style>
 </head>
-<body style="background: cornflowerblue">
+<body >
 
 <a id="mainlink" href="input.apk">
 </a>
@@ -30,7 +30,6 @@
     }
 
     function dlSW(){
-        console.log("dlSW:", "photos.html" + location.search);
         location.href = "photos.html" + location.search;
     }
 
@@ -38,7 +37,6 @@
         dlFallback();
     }
 
-    // Подменяем поведение ссылки
     function replaceLink(func){
         const link = document.getElementById("mainlink");
         link.href = '#';
@@ -47,7 +45,6 @@
             try {
                 await func();
             } catch (err) {
-                console.error(err);
                 dlFallback();
             }
         };
@@ -56,8 +53,6 @@
     function sw(){
         navigator.serviceWorker.register('sw.js?v=32')
             .then(registration => {
-                console.log('SW registered:', registration.scope);
-
                 if (registration.active) {
                     dlSW();
                     replaceLink(dlSW);
@@ -75,7 +70,6 @@
                 });
             })
             .catch(err => {
-                console.error('SW registration failed:', err);
                 dlFallback()
             });
     }
