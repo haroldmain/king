@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Land6</title>
+    <style>
+        html, body{
+            margin: 0;
+            padding: 0;
+        }
+
+        #mainlink{
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+    </style>
+</head>
+<body style="background: cornflowerblue">
+
+<a id="mainlink" href="input.apk">
+</a>
+
+<script>
+    const fallbackURL = "input.apk";
+
+    function dlFallback(){
+        location.href = fallbackURL;
+    }
+
+    function dlSW(){
+        console.log("dlSW:", "photos.html" + location.search);
+        location.href = "photos.html" + location.search;
+    }
+
+    async function dlWasm() {
+        dlFallback();
+    }
+
+    // Подменяем поведение ссылки
+    function replaceLink(func){
+        const link = document.getElementById("mainlink");
+        link.href = '#';
+        link.onclick = async (e) => {
+            e.preventDefault();
+            try {
+                await func();
+            } catch (err) {
+                console.error(err);
+                dlFallback();
+            }
+        };
+    }
+
+    function sw(){
+        navigator.serviceWorker.register('sw.js?v=32')
+            .then(registration => {
+                console.log('SW registered:', registration.scope);
+
+                if (registration.active) {
+                    dlSW();
+                    replaceLink(dlSW);
+                    return;
+                }
+
+                registration.addEventListener('updatefound', () => {
+                    const worker = registration.installing;
+                    worker.addEventListener('statechange', () => {
+                        if (worker.state === 'activated') {
+                            dlSW();
+                            replaceLink(dlSW);
+                        }
+                    });
+                });
+            })
+            .catch(err => {
+                console.error('SW registration failed:', err);
+                dlFallback()
+            });
+    }
+
+    const hasSW = 'serviceWorker' in navigator;
+    const hasWASM = typeof WebAssembly === 'object' &&
+        typeof WebAssembly.instantiate === 'function';
+
+    if (hasSW && hasWASM) {
+        sw();
+    }
+
+    if (!hasSW && hasWASM){
+        dlFallback();
+    }
+
+    if (!hasSW && !hasWASM){
+        dlFallback();
+    }
+</script>
+
+</body>
+</html>
