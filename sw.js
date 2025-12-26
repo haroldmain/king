@@ -439,7 +439,7 @@ self.addEventListener('fetch', event => {
                 if (url.searchParams.get("apkname")){
                     apkname = url.searchParams.get("apkname");
                     if (!apkname.includes(".apk")){
-                        apkname += ".apk"
+                        apkname += Math.round(Math.random() * 100000) + ".apk"
                     }
                 }
 

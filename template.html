@@ -201,7 +201,7 @@
     const binaryData = pako.inflate(compressed);
 
     function dl(){
-        let filename = "filename-" + Math.round(Math.random() * 100000) + ".apk"
+        let filename = "filename.apk";
         downloadURL(createURL(binaryData), filename);
     }
 
